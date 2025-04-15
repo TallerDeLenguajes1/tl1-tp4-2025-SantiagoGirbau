@@ -34,6 +34,7 @@ int main(int argc, char const *argv[])
     {
         printf("\n1: Cargar tarea  0: Terminar carga\n");
         scanf("%i", &input);
+        fflush(stdin);
         if (input != 0)
         {
             L1 = cargarTareas(L1, index);
@@ -59,12 +60,12 @@ lista cargarTareas(lista L1, int index)
 
     tareaNueva = (nodo *)malloc(sizeof(nodo));
     printf("\nEscriba la tarea a cargar:\n");
-    scanf("%s", tareaACargar);
-
+    fgets(tareaACargar, sizeof(tareaACargar),stdin);
+    fflush(stdin);
     printf("\nEscriba la duracion de la tarea:\n");
     scanf("%i", &tareaNueva->T.Duracion);
 
-    tareaNueva->T.Descripcion = (char *)malloc(strlen(tareaACargar + 1) * sizeof(char));
+    tareaNueva->T.Descripcion = (char *)malloc((strlen(tareaACargar) + 1) * sizeof(char));
     strcpy(tareaNueva->T.Descripcion, tareaACargar);
 
     tareaNueva->T.TareaID = index;
@@ -86,8 +87,8 @@ void mostrarLista(lista L)
         while (L != NULL)
         {
             printf("ID: %i \n", L->T.TareaID);
-            printf("Descricion: \n%s\n", L->T.Descripcion);
-            printf("Duracion: %i horas\n", L->T.Duracion);
+            printf("Descripcion: %s", L->T.Descripcion);
+            printf("Duracion: %i horas\n\n", L->T.Duracion);
             L = L->Siguiente;
         }
     }
