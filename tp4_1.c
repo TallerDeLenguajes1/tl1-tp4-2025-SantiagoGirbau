@@ -24,9 +24,7 @@ int main(int argc, char const *argv[])
 {
     lista L1,L2;
     L1=crearLista(L1);
-    L2=crearLista(L2);
-
-    
+    L2=crearLista(L2);    
 
     L1=cargarTareas(L1);
 
