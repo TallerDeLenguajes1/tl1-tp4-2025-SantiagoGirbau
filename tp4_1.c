@@ -19,7 +19,7 @@ struct Nodo
 typedef nodo *lista;
 
 lista crearLista(lista H);
-lista cargarTareas(lista L1);
+lista cargarTareas(lista L1, int index);
 void mostrarLista(lista L);
 
 int main(int argc, char const *argv[])
@@ -28,13 +28,16 @@ int main(int argc, char const *argv[])
     L1 = crearLista(L1);
     L2 = crearLista(L2);
     int input;
+    int index = 1000;
+
     do
     {
         printf("\n1: Cargar tarea  0: Terminar carga\n");
         scanf("%i", &input);
         if (input != 0)
         {
-            L1 = cargarTareas(L1);
+            L1 = cargarTareas(L1, index);
+            index=index+1;
         }
     } while (input != 0);
 
@@ -47,10 +50,10 @@ lista crearLista(lista H)
     return NULL;
 }
 
-lista cargarTareas(lista L1)
+lista cargarTareas(lista L1, int index)
 {
 
-    int index = 1000;
+    
     char tareaACargar[100];
     nodo *tareaNueva;
 
@@ -65,10 +68,9 @@ lista cargarTareas(lista L1)
     strcpy(tareaNueva->T.Descripcion, tareaACargar);
 
     tareaNueva->T.TareaID = index;
-    tareaNueva->Siguiente = NULL;
-    
+    tareaNueva->Siguiente = L1;
     L1 = tareaNueva;
-    index++;
+    
 
     return L1;
 }
@@ -84,8 +86,8 @@ void mostrarLista(lista L)
         while (L != NULL)
         {
             printf("ID: %i \n", L->T.TareaID);
-            printf("Descripción: \n%s\n", L->T.Descripcion);
-            printf("Duración: %i\n", L->T.Duracion);
+            printf("Descricion: \n%s\n", L->T.Descripcion);
+            printf("Duracion: %i horas\n", L->T.Duracion);
             L = L->Siguiente;
         }
     }
