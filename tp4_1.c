@@ -19,30 +19,66 @@ struct Nodo
 typedef nodo *lista;
 
 lista crearLista(lista H);
-lista cargarTareas(lista L1, int index);
+lista cargarTareas(lista pendientes, int index);
 void mostrarLista(lista L);
+void completarTareas(lista *pendientes, lista *completadas);
 
 int main(int argc, char const *argv[])
 {
-    lista L1, L2;
-    L1 = crearLista(L1);
-    L2 = crearLista(L2);
+    lista pendientes, completadas;
+    pendientes = crearLista(pendientes);
+    completadas = crearLista(completadas);
     int input;
     int index = 1000;
 
     do
     {
-        printf("\n1: Cargar tarea  0: Terminar carga\n");
+        printf("\n1: Cargar tarea  0: Terminar carga\nEscriba lo que desea realizar: ");
         scanf("%i", &input);
         fflush(stdin);
         if (input != 0)
         {
-            L1 = cargarTareas(L1, index);
-            index=index+1;
+            pendientes = cargarTareas(pendientes, index);
+            index = index + 1;
         }
     } while (input != 0);
 
-    mostrarLista(L1);
+    input = 1;
+
+    do
+    {
+        printf("-------------------------------Menu principal-------------------------\n\n");
+        printf("1: Ver tareas pendientes  2: Ver tareas completadas 3: Ver TODAS las tareas  4: Completar tareas  0: Salir del programa\nSeleccione una opción: ");
+        scanf("%i", &input);
+        fflush(stdin);
+        switch (input)
+        {
+        case 1:
+            printf("\n-----------------Tareas PENDIENTES:-----------------\n");
+            mostrarLista(pendientes);
+            break;
+        case 2:
+            printf("\n----------------Tareas COMPLETADAS:-----------------\n");
+            mostrarLista(completadas);
+            break;
+        case 3:
+            printf("\n-----------------Tareas PENDIENTES:-----------------\n");
+            mostrarLista(pendientes);
+            printf("\n----------------Tareas COMPLETADAS:-----------------\n");
+            mostrarLista(completadas);
+            break;
+        case 4:
+            completarTareas(&pendientes, &completadas);
+            break;
+        case 0:
+            printf("\nSaliendo...\n");
+            break;
+        default:
+            printf("\n%i No es una opcion valida.\n", input);
+            break;
+        }
+    } while (input != 0);
+
     return 0;
 }
 
@@ -51,36 +87,34 @@ lista crearLista(lista H)
     return NULL;
 }
 
-lista cargarTareas(lista L1, int index)
+lista cargarTareas(lista pendientes, int index)
 {
 
-    
     char tareaACargar[100];
     nodo *tareaNueva;
-
     tareaNueva = (nodo *)malloc(sizeof(nodo));
-    printf("\nEscriba la tarea a cargar:\n");
-    fgets(tareaACargar, sizeof(tareaACargar),stdin);
+
+    printf("\nEscriba la tarea a cargar: ");
+    fgets(tareaACargar, sizeof(tareaACargar), stdin);
     fflush(stdin);
-    printf("\nEscriba la duracion de la tarea:\n");
+    printf("\nEscriba la duracion de la tarea: ");
     scanf("%i", &tareaNueva->T.Duracion);
 
     tareaNueva->T.Descripcion = (char *)malloc((strlen(tareaACargar) + 1) * sizeof(char));
     strcpy(tareaNueva->T.Descripcion, tareaACargar);
 
     tareaNueva->T.TareaID = index;
-    tareaNueva->Siguiente = L1;
-    L1 = tareaNueva;
-    
+    tareaNueva->Siguiente = pendientes;
+    pendientes = tareaNueva;
 
-    return L1;
+    return pendientes;
 }
 
 void mostrarLista(lista L)
 {
     if (L == NULL)
     {
-        printf("\nLa lista está vacía\n");
+        printf("\nLa lista esta vacia\n");
     }
     else
     {
@@ -88,8 +122,29 @@ void mostrarLista(lista L)
         {
             printf("ID: %i \n", L->T.TareaID);
             printf("Descripcion: %s", L->T.Descripcion);
-            printf("Duracion: %i horas\n\n", L->T.Duracion);
+            if (L->T.Duracion == 1)
+            {
+                printf("Duracion: %i hora\n\n", L->T.Duracion);
+            }
+            else
+            {
+                printf("Duracion: %i horas\n\n", L->T.Duracion);
+            }
             L = L->Siguiente;
         }
     }
+}
+
+void completarTareas(lista *pendientes, lista *completadas)
+{
+    lista listaPelotuda = *pendientes;
+    int input;
+    do
+    {
+        printf("%s", listaPelotuda->T.Descripcion);        
+        printf("\n1: Tarea completada.  0: area aun pendiente.\n", input);
+        scanf("%i", &input);
+        
+    } while (input != 0);
+    
 }
