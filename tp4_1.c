@@ -187,7 +187,7 @@ lista completarTareas(lista pendientes, lista *completadas)
     int id;
     int input;
  
-    printf("1: Completar por id 2: Completar por palabra clave");
+    printf("1: Completar por id  2: Completar por palabra clave \nSeleccione una opcion: ");
     scanf("%i", &input);
     fflush(stdin);
     if (input == 2)
@@ -196,23 +196,23 @@ lista completarTareas(lista pendientes, lista *completadas)
     }
     else
     {
-        printf("Ingrese el ID de la tarea a completar: ");
+        printf("\nIngrese el ID de la tarea a completar: ");
         scanf("%i", &id);
         fflush(stdin);
     }
     nodo *actual = pendientes;
-    while (actual != NULL)
+    while (actual != NULL && id!=-1)
     {
         if (actual->T.TareaID == id)
         {
             *completadas = meterTarea(*completadas, actual);
             pendientes = borrarTarea(pendientes, id);
-            printf("Tarea %i completada.\n", id);
+            printf("Tarea %i completada.\n\n", id);
             return pendientes;
         }
         actual = actual->Siguiente;
     }
-    printf("No se encontró la tarea con ID %i.\n", id);
+    printf("No se encontro la tarea con esa ID o palabra.\n\n");
     return pendientes;
 }
 
@@ -229,4 +229,5 @@ int buscarIdPorPalabra(lista Lista){
         }
         busqueda=busqueda->Siguiente;
     }
+    return -1;
 }
