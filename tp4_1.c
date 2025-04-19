@@ -20,10 +20,11 @@ typedef nodo *lista;
 
 lista crearLista(lista H);
 lista cargarTareas(lista pendientes, int index);
-lista moverTarea(lista listaOrigen, lista listaDestino, int id);
+lista meterTarea(lista listaDestino, nodo *tareaMover);
 lista borrarTarea(lista lista, int id);
 void mostrarLista(lista L);
-lista completarTareas(lista pendientes, lista completadas);
+lista completarTareas(lista pendientes, lista *completadas);
+int buscarIdPorPalabra(lista lista);
 
 int main(int argc, char const *argv[])
 {
@@ -70,7 +71,7 @@ int main(int argc, char const *argv[])
             mostrarLista(completadas);
             break;
         case 4:
-            completarTareas(pendientes, completadas);
+            pendientes = completarTareas(pendientes, &completadas);
             break;
         case 0:
             printf("\nSaliendo...\n");
@@ -108,48 +109,40 @@ lista cargarTareas(lista pendientes, int index)
 
     tareaNueva->T.TareaID = index;
     tareaNueva->Siguiente = pendientes;
-    pendientes = tareaNueva;    
+    pendientes = tareaNueva;
 
     return pendientes;
 }
 
-lista meterTarea(lista listaOrigen, lista listaDestino, int id){
-
-    nodo *tareaMover = (nodo *)malloc(sizeof(nodo));
-
-    while (listaOrigen!=NULL)
-    {
-        if (listaOrigen->T.TareaID==id)
-        {
-            tareaMover=listaOrigen;
-            tareaMover->T.Duracion=listaOrigen->T.Duracion;
-        
-            tareaMover->T.Descripcion = (char *)malloc((strlen(listaOrigen->T.Descripcion) + 1) * sizeof(char));
-            strcpy(tareaMover->T.Descripcion, listaOrigen->T.Descripcion);
-        
-            tareaMover->T.TareaID = listaOrigen->T.TareaID;
-            tareaMover->Siguiente = listaOrigen->Siguiente;
-            listaDestino->Siguiente=tareaMover;   
-        }
-        listaOrigen=listaOrigen->Siguiente;
-    }
-
-    return listaDestino;
-
+lista meterTarea(lista listaDestino, nodo *tareaMover)
+{
+    nodo *nuevoNodo = (nodo *)malloc(sizeof(nodo));
+    nuevoNodo->T.TareaID = tareaMover->T.TareaID;
+    nuevoNodo->T.Duracion = tareaMover->T.Duracion;
+    nuevoNodo->T.Descripcion = (char *)malloc(strlen(tareaMover->T.Descripcion) + 1);
+    strcpy(nuevoNodo->T.Descripcion, tareaMover->T.Descripcion);
+    nuevoNodo->Siguiente = listaDestino;
+    return nuevoNodo;
 }
 
-lista borrarTarea(lista L, int id) {
+lista borrarTarea(lista L, int id)
+{
     nodo *actual = L;
     nodo *anterior = NULL;
 
-    while (actual != NULL) {
-        if (actual->T.TareaID == id) {
-            if (anterior == NULL) {
+    while (actual != NULL)
+    {
+        if (actual->T.TareaID == id)
+        {
+            if (anterior == NULL)
+            {
                 lista nuevaCabecera = actual->Siguiente;
                 free(actual->T.Descripcion);
                 free(actual);
                 return nuevaCabecera;
-            } else {
+            }
+            else
+            {
                 anterior->Siguiente = actual->Siguiente;
                 free(actual->T.Descripcion);
                 free(actual);
@@ -189,11 +182,51 @@ void mostrarLista(lista L)
     }
 }
 
-lista completarTareas(lista pendientes, lista completadas)
+lista completarTareas(lista pendientes, lista *completadas)
 {
-        int id;
+    int id;
+    int input;
+ 
+    printf("1: Completar por id 2: Completar por palabra clave");
+    scanf("%i", &input);
+    fflush(stdin);
+    if (input == 2)
+    {
+       id=buscarIdPorPalabra(pendientes);
+    }
+    else
+    {
+        printf("Ingrese el ID de la tarea a completar: ");
         scanf("%i", &id);
-        completadas=meterTarea(completadas, pendientes, id);
-        pendientes=borrarTarea(pendientes, id);
+        fflush(stdin);
+    }
+    nodo *actual = pendientes;
+    while (actual != NULL)
+    {
+        if (actual->T.TareaID == id)
+        {
+            *completadas = meterTarea(*completadas, actual);
+            pendientes = borrarTarea(pendientes, id);
+            printf("Tarea %i completada.\n", id);
+            return pendientes;
+        }
+        actual = actual->Siguiente;
+    }
+    printf("No se encontró la tarea con ID %i.\n", id);
+    return pendientes;
+}
 
+int buscarIdPorPalabra(lista Lista){
+    char palabra[20];
+    nodo *busqueda = Lista;
+    printf("Ingrese una palabra de la tarea a completar: ");
+    scanf("%s", palabra);
+    while (busqueda != NULL)
+    {
+        if (strstr(busqueda->T.Descripcion, palabra))
+        {
+            return busqueda->T.TareaID;
+        }
+        busqueda=busqueda->Siguiente;
+    }
 }
