@@ -20,8 +20,10 @@ typedef nodo *lista;
 
 lista crearLista(lista H);
 lista cargarTareas(lista pendientes, int index);
+lista moverTarea(lista listaOrigen, lista listaDestino, int id);
+lista borrarTarea(lista lista, int id);
 void mostrarLista(lista L);
-void completarTareas(lista *pendientes, lista *completadas);
+lista completarTareas(lista pendientes, lista completadas);
 
 int main(int argc, char const *argv[])
 {
@@ -48,7 +50,7 @@ int main(int argc, char const *argv[])
     do
     {
         printf("-------------------------------Menu principal-------------------------\n\n");
-        printf("1: Ver tareas pendientes  2: Ver tareas completadas 3: Ver TODAS las tareas  4: Completar tareas  0: Salir del programa\nSeleccione una opción: ");
+        printf("1: Ver tareas pendientes  2: Ver tareas completadas 3: Ver TODAS las tareas  4: Completar tareas  0: Salir del programa\nSeleccione una opcion: ");
         scanf("%i", &input);
         fflush(stdin);
         switch (input)
@@ -68,7 +70,7 @@ int main(int argc, char const *argv[])
             mostrarLista(completadas);
             break;
         case 4:
-            completarTareas(&pendientes, &completadas);
+            completarTareas(pendientes, completadas);
             break;
         case 0:
             printf("\nSaliendo...\n");
@@ -91,6 +93,7 @@ lista cargarTareas(lista pendientes, int index)
 {
 
     char tareaACargar[100];
+    int duracion;
     nodo *tareaNueva;
     tareaNueva = (nodo *)malloc(sizeof(nodo));
 
@@ -105,9 +108,60 @@ lista cargarTareas(lista pendientes, int index)
 
     tareaNueva->T.TareaID = index;
     tareaNueva->Siguiente = pendientes;
-    pendientes = tareaNueva;
+    pendientes = tareaNueva;    
 
     return pendientes;
+}
+
+lista meterTarea(lista listaOrigen, lista listaDestino, int id){
+
+    nodo *tareaMover = (nodo *)malloc(sizeof(nodo));
+
+    while (listaOrigen!=NULL)
+    {
+        if (listaOrigen->T.TareaID==id)
+        {
+            tareaMover=listaOrigen;
+            tareaMover->T.Duracion=listaOrigen->T.Duracion;
+        
+            tareaMover->T.Descripcion = (char *)malloc((strlen(listaOrigen->T.Descripcion) + 1) * sizeof(char));
+            strcpy(tareaMover->T.Descripcion, listaOrigen->T.Descripcion);
+        
+            tareaMover->T.TareaID = listaOrigen->T.TareaID;
+            tareaMover->Siguiente = listaOrigen->Siguiente;
+            listaDestino->Siguiente=tareaMover;   
+        }
+        listaOrigen=listaOrigen->Siguiente;
+    }
+
+    return listaDestino;
+
+}
+
+lista borrarTarea(lista L, int id) {
+    nodo *actual = L;
+    nodo *anterior = NULL;
+
+    while (actual != NULL) {
+        if (actual->T.TareaID == id) {
+            if (anterior == NULL) {
+                lista nuevaCabecera = actual->Siguiente;
+                free(actual->T.Descripcion);
+                free(actual);
+                return nuevaCabecera;
+            } else {
+                anterior->Siguiente = actual->Siguiente;
+                free(actual->T.Descripcion);
+                free(actual);
+                return L;
+            }
+        }
+        anterior = actual;
+        actual = actual->Siguiente;
+    }
+
+    printf("No se encontró una tarea con ese ID.\n");
+    return L;
 }
 
 void mostrarLista(lista L)
@@ -135,16 +189,11 @@ void mostrarLista(lista L)
     }
 }
 
-void completarTareas(lista *pendientes, lista *completadas)
+lista completarTareas(lista pendientes, lista completadas)
 {
-    lista listaPelotuda = *pendientes;
-    int input;
-    do
-    {
-        printf("%s", listaPelotuda->T.Descripcion);        
-        printf("\n1: Tarea completada.  0: area aun pendiente.\n", input);
-        scanf("%i", &input);
-        
-    } while (input != 0);
-    
+        int id;
+        scanf("%i", &id);
+        completadas=meterTarea(completadas, pendientes, id);
+        pendientes=borrarTarea(pendientes, id);
+
 }
