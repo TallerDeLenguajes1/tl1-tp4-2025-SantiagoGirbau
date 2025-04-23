@@ -25,6 +25,7 @@ lista borrarTarea(lista lista, int id);
 void mostrarLista(lista L);
 lista completarTareas(lista pendientes, lista *completadas);
 int buscarIdPorPalabra(lista lista);
+void liberarMemoria(lista lista);
 
 int main(int argc, char const *argv[])
 {
@@ -81,6 +82,9 @@ int main(int argc, char const *argv[])
             break;
         }
     } while (input != 0);
+
+    liberarMemoria(pendientes);
+    liberarMemoria(completadas);
 
     return 0;
 }
@@ -230,4 +234,13 @@ int buscarIdPorPalabra(lista Lista){
         busqueda=busqueda->Siguiente;
     }
     return -1;
+}
+
+void liberarMemoria(lista lista){
+
+    while (lista!=NULL)
+    {
+        free(lista);
+        lista=lista->Siguiente;
+    }
 }
